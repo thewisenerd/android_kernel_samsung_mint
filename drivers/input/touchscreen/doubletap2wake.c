@@ -34,7 +34,7 @@
 #include <asm-generic/cputime.h>
 
 /* uncomment since no touchscreen defines android touch, do that here */
-#define ANDROID_TOUCH_DECLARED
+//#define ANDROID_TOUCH_DECLARED
 
 /* uncomment if dt2w_scr_suspended is updated automagically */
 #define WAKE_HOOKS_DEFINED
@@ -46,11 +46,6 @@
 #include <linux/earlysuspend.h>
 #endif
 #endif // WAKE_HOOKS_DEFINED
-
-/* if Sweep2Wake is compiled it will already have taken care of this */
-#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
-#define ANDROID_TOUCH_DECLARED
-#endif
 
 /* Version, author, desc, etc */
 #define DRIVER_AUTHOR "Dennis Rassmann <showp1984@gmail.com>"
