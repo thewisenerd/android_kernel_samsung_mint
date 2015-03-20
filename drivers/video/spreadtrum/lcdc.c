@@ -24,6 +24,12 @@
 
 #include "sprdfb.h"
 
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#if defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+#include <linux/input/doubletap2wake.h>
+#endif
+#endif
+
 extern void lcdc_dithering_enable(void);
 
 struct sprd_lcd_controller {
@@ -421,7 +427,14 @@ static int32_t sprd_lcdc_suspend(struct sprdfb_device *dev)
 		dev->enable = 0;
 		clk_disable(lcdc.clk_lcdc);
 	}
-	up(&dev->work_proceedure_lock);	
+	up(&dev->work_proceedure_lock);
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#if defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	dt2w_scr_suspended = true;
+#endif
+#endif
+
 	return 0;
 }
 
@@ -432,15 +445,15 @@ void lcd_esd_recovery(struct sprdfb_device *dev)
 {
 	printk(KERN_INFO "sprdfb:[%s]++++\n",__FUNCTION__);
 	down(&dev->work_proceedure_lock);
-		msleep(200);		
+		msleep(200);
 		lcd_regulator_enable(0);
 		msleep(500);
 		lcd_regulator_enable(1);
-		msleep(200);		
+		msleep(200);
 		clk_enable(lcdc.clk_lcdc);
 		lcdc.vsync_done = 1;
 
-		msleep(200);	
+		msleep(200);
 		sprd_lcdc_reset();
 		lcdc_hw_init();
 		sprd_lcdc_init(dev);
@@ -452,10 +465,10 @@ void lcd_esd_recovery(struct sprdfb_device *dev)
 
 		dev->enable = 1;
 		dev->vsync_waiter ++;
-		dev->ctrl->sync(dev);	
+		dev->ctrl->sync(dev);
 		dev->ctrl->refresh(dev);
 	up(&dev->work_proceedure_lock);
-	printk(KERN_INFO "sprdfb:[%s]----\n",__FUNCTION__);	
+	printk(KERN_INFO "sprdfb:[%s]----\n",__FUNCTION__);
 }
 EXPORT_SYMBOL(lcd_esd_recovery);
 #endif
@@ -486,7 +499,14 @@ static int32_t sprd_lcdc_resume(struct sprdfb_device *dev)
 
 		dev->enable = 1;
 	}
-	up(&dev->work_proceedure_lock);	
+	up(&dev->work_proceedure_lock);
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#if defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	dt2w_scr_suspended = false;
+#endif
+#endif
+
 	return 0;
 }
 
