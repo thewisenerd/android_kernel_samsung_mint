@@ -226,7 +226,8 @@ static void dt2w_input_event(struct input_handle *handle, unsigned int type,
 }
 
 static int input_dev_filter(struct input_dev *dev) {
-	if (strstr(dev->name, "ft5x06")) {
+	if (strstr(dev->name, "sec_touch")
+			||strstr(dev->name, "ist30xx_ts")) {
 		return 0;
 	} else {
 		return 1;
