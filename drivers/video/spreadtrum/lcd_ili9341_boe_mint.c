@@ -38,29 +38,29 @@ static int32_t ili9486_init(struct panel_spec *self)
 	printk("ili9486_init_mint\n");
 
 	/*Power Setting Seq*/
-	send_cmd(0xC0); 
+	send_cmd(0xC0);
 	send_data(0x18);
 
-	send_cmd(0xC1); 
+	send_cmd(0xC1);
 	send_data(0x10);
 
-	send_cmd(0xC5); 
+	send_cmd(0xC5);
 	send_data(0x2E);
 	send_data(0x4E);
 
-	send_cmd(0xC7); 
+	send_cmd(0xC7);
 	send_data(0x00);
 
-	send_cmd(0xF7); 
+	send_cmd(0xF7);
 	send_data(0x20);
-	
-	send_cmd(0xB1); 
+
+	send_cmd(0xB1);
 	send_data(0x00);
 	send_data(0x1A);
-	
-	send_cmd(0xCB); 
+
+	send_cmd(0xCB);
 	send_data(0x39);
-	send_data(0x2C);	
+	send_data(0x2C);
 	send_data(0x00);
 	send_data(0x34);
 	send_data(0x02);
@@ -68,65 +68,65 @@ static int32_t ili9486_init(struct panel_spec *self)
 	msleep(50); // 50ms
 
 	/*Display parameter setting Seq*/
-	send_cmd(0xB4); 
+	send_cmd(0xB4);
 	send_data(0x02);
 
-	send_cmd(0xB6); 
+	send_cmd(0xB6);
 	send_data(0x0A);
 	send_data(0xA2);
 	send_data(0x27);
 
-	send_cmd(0xB7); 
+	send_cmd(0xB7);
 	send_data(0x06);
-	
-	send_cmd(0xF6); 
+
+	send_cmd(0xF6);
 	send_data(0x01);
-	send_data(0x30);	
+	send_data(0x30);
 	send_data(0x00);
 
-	send_cmd(0x3A); 
+	send_cmd(0x3A);
 	send_data(0x55);
 
-	send_cmd(0x36); 
+	send_cmd(0x36);
 	send_data(0xD8);
 
-	send_cmd(0x35); 
+	send_cmd(0x35);
 	send_data(0x00);
 
-	send_cmd(0xCF); 
+	send_cmd(0xCF);
 	send_data(0x00);
 	send_data(0xFB);
 	send_data(0xFF);
 
-	send_cmd(0xED); 
-	send_data(0x64); 
+	send_cmd(0xED);
+	send_data(0x64);
 	send_data(0x03);
 	send_data(0x12);
 	send_data(0x81);
 
-	send_cmd(0xE8); 
-	send_data(0x85); 
+	send_cmd(0xE8);
+	send_data(0x85);
 	send_data(0x00);
-	send_data(0x60);	
+	send_data(0x60);
 
-	send_cmd(0xEA); 
-	send_data(0x00); 
+	send_cmd(0xEA);
+	send_data(0x00);
 	send_data(0x00);
 
-	send_cmd(0x2A); 
-	send_data(0x00); 
+	send_cmd(0x2A);
+	send_data(0x00);
 	send_data(0x00);
 	send_data(0x00);
 	send_data(0xEF);
 
-	send_cmd(0x2B); 
-	send_data(0x00); 
+	send_cmd(0x2B);
+	send_data(0x00);
 	send_data(0x00);
 	send_data(0x01);
 	send_data(0x3F);
 
-	send_cmd(0xF2); 
-	send_data(0x02); 
+	send_cmd(0xF2);
+	send_data(0x02);
 
 	/*Gamma setting Seq*/
 	send_cmd(0xE0);
@@ -135,38 +135,38 @@ static int32_t ili9486_init(struct panel_spec *self)
 	send_data(0x10);
 	send_data(0x09);
 	send_data(0x0F);
-	
+
 	send_data(0x06);
 	send_data(0x41);
 	send_data(0x84);
 	send_data(0x32);
 	send_data(0x06);
-	
+
 	send_data(0x0D);
 	send_data(0x04);
 	send_data(0x0E);
 	send_data(0x10);
 	send_data(0x0C);
 
-	send_cmd(0xE1); 
-	send_data(0x00);	
+	send_cmd(0xE1);
+	send_data(0x00);
 	send_data(0x10);
 	send_data(0x14);
 	send_data(0x02);
 	send_data(0x10);
-	
+
 	send_data(0x04);
 	send_data(0x2C);
 	send_data(0x22);
 	send_data(0x3F);
 	send_data(0x04);
-	
+
 	send_data(0x10);
 	send_data(0x0A);
 	send_data(0x28);
 	send_data(0x2E);
 	send_data(0x03);
-	
+
 	send_cmd(0x11); // (SLPOUT)
 
 	msleep(120); // 150ms
@@ -174,7 +174,7 @@ static int32_t ili9486_init(struct panel_spec *self)
 	send_cmd(0x29); // (DISPON)
 
 	msleep(50); // 200ms
-	
+
 	//LCD_PRINT("ili9341_init: end\n");
 
 	return 0;
@@ -209,7 +209,7 @@ static int32_t ili9486_invalidate(struct panel_spec *self)
 {
 	return self->ops->panel_set_window(self, 0, 0,
 			self->width-1, self->height-1);
-	
+
 }
 
 static int32_t ili9486_invalidate_rect(struct panel_spec *self,
@@ -237,11 +237,11 @@ static int32_t ili9486_enter_sleep(struct panel_spec *self, uint8_t is_sleep)
 	printk("ili9486_enter_sleep\n");
 	if(is_sleep) {
 		send_cmd(0x10);
-		msleep(120); 
+		msleep(120);
 	}
 	else {
 		send_cmd(0x11);
-		msleep(120); 
+		msleep(120);
 		#if 0
 		if(call_reports==1)
 			lcd_frame_inversion_mode();
@@ -255,15 +255,15 @@ static uint32_t ili9486_read_id(struct panel_spec *self)
 	uint32_t read_value = 0;
 	send_data_t send_cmd = self->info.mcu->ops->send_cmd;
 	read_data_t read_data = self->info.mcu->ops->read_data;
-	
+
 	send_cmd(0x04);
 
-	read_data(); 
+	read_data();
 	read_value += read_data()<< 16;
 	read_value += read_data()<< 8;
 	read_value += read_data();
-  
-	return read_value; 
+
+	return read_value;
 }
 
 static struct panel_operations lcd_ili9486_operations = {
@@ -277,16 +277,16 @@ static struct panel_operations lcd_ili9486_operations = {
 };
 
 static struct timing_mcu lcd_ili9486_timing[] = {
-	[LCD_REGISTER_TIMING] = {         
-		.rcss = 5,  
+	[LCD_REGISTER_TIMING] = {
+		.rcss = 5,
 		.rlpw = 60,
 		.rhpw = 101,
 		.wcss = 5,
 		.wlpw = 40,
 		.whpw = 36,
 	},
-	[LCD_GRAM_TIMING] = {         
-		.rcss = 5,	
+	[LCD_GRAM_TIMING] = {
+		.rcss = 5,
 		.rlpw = 60,
 		.rhpw = 101,
 		.wcss = 5,
@@ -317,7 +317,7 @@ struct panel_cfg lcd_ili9486 = {
 	.lcd_id = 0x60b4,
 #else
 	.lcd_id = 0x61a4,
-#endif	
+#endif
 	.lcd_name = "lcd_ili9486",
 	.panel = &lcd_ili9486_spec,
 };
@@ -331,11 +331,11 @@ int lcd_regulator_enable(int en)
 		lcd_regulator = regulator_get(NULL, REGU_NAME_LCD);
 		if (IS_ERR(lcd_regulator)) {
 			pr_err("ILI9486:could not get lcd regulator\n");
-			lcd_regulator = NULL;		
+			lcd_regulator = NULL;
 			return -1;
 		}
 	}
-	
+
 	if (en == 1) {
 		err = regulator_enable(lcd_regulator);
 		if (err) {
@@ -359,7 +359,7 @@ EXPORT_SYMBOL(lcd_regulator_enable);
 
 static int __init lcd_ili9486_init(void)
 {
-	lcd_regulator_enable(1);	
+	lcd_regulator_enable(1);
 	return sprd_register_panel(&lcd_ili9486);
 }
 
