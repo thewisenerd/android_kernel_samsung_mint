@@ -39,6 +39,12 @@
 
 #include <linux/input/mt.h>
 
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+#include <linux/input/doubletap2wake.h>
+#endif
+#endif
+
 #if IST30XX_DEBUG
 #include "ist30xx_misc.h"
 #endif
@@ -868,19 +874,61 @@ static ssize_t firmware_update_status(struct device *dev, struct device_attribut
 
 void ist30xx_disable_irq(struct ist30xx_data *data)
 {
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#if defined(CONFIG_TOUCHSCREEN_SWEEP2WAKE) || defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	bool prevent_sleep = false;
+#endif
+#if defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	prevent_sleep = prevent_sleep || (dt2w_switch > 0);
+#endif
+#endif
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	if (prevent_sleep) {
+		enable_irq_wake(data->client->irq);
+	} else {
+#endif
+
 	if (data->irq_enabled) {
 		disable_irq(data->client->irq);
 		data->irq_enabled = 0;
 	}
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	} //prevent_sleep
+#endif
+
 }
 
 void ist30xx_enable_irq(struct ist30xx_data *data)
 {
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#if defined(CONFIG_TOUCHSCREEN_SWEEP2WAKE) || defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	bool prevent_sleep = false;
+#endif
+#if defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	prevent_sleep = prevent_sleep || (dt2w_switch > 0);
+#endif
+#endif
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	if (prevent_sleep) {
+		disable_irq_wake(data->client->irq);
+	} else {
+#endif
+
 	if (!data->irq_enabled) {
 		enable_irq(data->client->irq);
 		msleep(50);
 		data->irq_enabled = 1;
 	}
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	} //prevent_sleep
+#endif
+
 }
 
 int ist30xx_max_error_cnt = MAX_ERR_CNT;
@@ -1667,7 +1715,11 @@ static int __devinit ist30xx_probe(struct i2c_client *		client,
 #endif
 
 	ret = request_threaded_irq(client->irq, NULL, ist30xx_irq_thread,
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT | IRQF_NO_SUSPEND, "ist30xx_ts", data);
+#else
 				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT, "ist30xx_ts", data);
+#endif
 	if (ret)
 		goto err_irq;
 

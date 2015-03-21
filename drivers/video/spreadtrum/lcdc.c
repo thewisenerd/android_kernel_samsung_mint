@@ -24,6 +24,12 @@
 
 #include "sprdfb.h"
 
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#if defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+#include <linux/input/doubletap2wake.h>
+#endif
+#endif
+
 extern void lcdc_dithering_enable(void);
 
 struct sprd_lcd_controller {
@@ -422,6 +428,13 @@ static int32_t sprd_lcdc_suspend(struct sprdfb_device *dev)
 		clk_disable(lcdc.clk_lcdc);
 	}
 	up(&dev->work_proceedure_lock);	
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#if defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	dt2w_scr_suspended = true;
+#endif
+#endif
+
 	return 0;
 }
 
@@ -487,6 +500,13 @@ static int32_t sprd_lcdc_resume(struct sprdfb_device *dev)
 		dev->enable = 1;
 	}
 	up(&dev->work_proceedure_lock);	
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#if defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	dt2w_scr_suspended = false;
+#endif
+#endif
+
 	return 0;
 }
 

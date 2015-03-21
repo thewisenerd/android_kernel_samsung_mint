@@ -22,6 +22,12 @@
 #include <mach/gpio.h>
 #include "ist30xx.h"
 
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+#include <linux/input/doubletap2wake.h>
+#endif
+#endif
+
 /******************************************************************************
  * Return value of Error
  * EPERM  : 1
@@ -230,12 +236,33 @@ int ist30xx_power_on(void)
 
 int ist30xx_power_off(void)
 {
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#if defined(CONFIG_TOUCHSCREEN_SWEEP2WAKE) || defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	bool prevent_sleep = false;
+#endif
+#if defined(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)
+	prevent_sleep = prevent_sleep || (dt2w_switch > 0);
+#endif
+#endif
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	if (prevent_sleep) {
+		; // do nothing
+	} else { // power off screen.
+#endif
+
 	if (ts_data->status.power != 0) {
         	ts_power_enable(0);
 		// TODO : place power off code here.
 		ts_data->status.power = 0;
 		DMSG("[ TSP ] IST30XX Power off!\n");
        }
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	} //prevent_sleep
+#endif
+
 	return 0;
 }
 
